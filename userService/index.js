@@ -4,9 +4,25 @@ const { connectToDatabase } = require('./config/databaseconfig');
 const Joi = require('joi');
 const User = require('../shared/models/user'); 
 const bcrypt = require('bcrypt');
+const winston = require('winston');
 app.use(express.json());
 require('dotenv').config();
 const port =  process.env.PORT; 
+
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' }),
+  ],
+});
+
 
 const userValidationSchema = Joi.object({
   username: Joi.string().required(),
@@ -170,5 +186,6 @@ connectToDatabase()
 
   app.use((err, req, res, next) => {
     console.error('Error occurred:', err);
+    logger.error(err.message, { stack: err.stack });
     return res.status(500).json({ error: 'Internal server error.' });
   });
