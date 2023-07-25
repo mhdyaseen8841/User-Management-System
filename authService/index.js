@@ -16,7 +16,7 @@ const port =  process.env.AUTHPORT;
 //   port: 6379,
 // });
 // JWT secret key
-const JWT_SECRET = 'jwt@MdriftUserManagement2023';
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 
 app.post('/login', async (req, res) => {
