@@ -5,9 +5,10 @@ const Joi = require('joi');
 const User = require('../shared/models/user'); 
 const bcrypt = require('bcrypt');
 const winston = require('winston');
+
 app.use(express.json());
 require('dotenv').config();
-const port =  process.env.PORT; 
+const port =  process.env.USERPORT; 
 
 
 const logger = winston.createLogger({
@@ -55,8 +56,12 @@ app.post('/users', async (req, res) => {
     // Create and save the new user to the database with the hashed password
     const newUser = new User({ username, email, password: hashedPassword });
     const savedUser = await newUser.save();
-
-    return res.status(201).json({ message: 'User registered successfully.', user: savedUser });
+    const userResponse = {
+      _id: savedUser._id,
+      username: savedUser.username,
+      email: savedUser.email,
+    };
+    return res.status(201).json({ message: 'User registered successfully.', user: userResponse });
   } catch (err) {
     console.error('Error saving user to the database:', err);
     next(err);
