@@ -13,7 +13,6 @@ const axios = require("axios");
 
 const port = process.env.PROFILEPORT;
 const userValidationSchema = Joi.object({
- 
   fullName: Joi.string().required(),
   city: Joi.string().required(),
   address: Joi.string().required(),
@@ -23,18 +22,17 @@ const userValidationSchema = Joi.object({
 
 let validateUrl = "http://localhost:" + process.env.USERPORT + "/usersById/";
 
-
-
-app.post("/profile",authenticateToken, async (req, res, next) => {
-  const {  fullName, bio, profilePictureUrl, city, address } = req.body;
+app.post("/profile", authenticateToken, async (req, res, next) => {
+  const { fullName, bio, profilePictureUrl, city, address } = req.body;
   const { error } = userValidationSchema.validate(req.body);
   if (error) {
     logger.error({ error: error.details[0].message });
     return res.status(400).json({ error: error.details[0].message });
   }
+
   const userId = req.user.userId;
-  console.log(req.user);
-  if(!userId) {
+
+  if (!userId) {
     logger.error("Invalid userId");
     return res.status(404).json("userId not found");
   }
@@ -48,17 +46,15 @@ app.post("/profile",authenticateToken, async (req, res, next) => {
         .status(400)
         .json({ error: "Already Created Profile, Try Update it" });
     }
-    console.log(userId)
-    const validationResponse = await axios.get(
-      `http://localhost:3000/usersById/${userId}`
-    );
-console.log(validationResponse)
+
+    const validationResponse = await axios.get(validateUrl + userId);
+
     if (!validationResponse) {
       logger.error("invalid user id");
 
       return res.status(400).json({ error: "Invalid user ID." });
     }
-console.log("heyyheyy")
+
     const newProfile = new Profile({
       userId,
       fullName,
@@ -73,8 +69,9 @@ console.log("heyyheyy")
       profile: savedProfile,
     });
   } catch (err) {
-    logger.error(err.message);
-    console.error("Error saving user profile to the database:", err);
+    console.log(err);
+    // logger.error(err.message);
+    // console.error("Error saving user profile to the database:", err);
     next(err);
   }
 });
@@ -111,10 +108,10 @@ app.put("/profile/:id", async (req, res, next) => {
   }
 });
 
-app.get("/getProfile",authenticateToken, async (req, res, next) => {
+app.get("/getProfile", authenticateToken, async (req, res, next) => {
   const userId = req.user.userId;
-  console.log(req.user);
-  if(!userId) {
+
+  if (!userId) {
     logger.error("Invalid userId");
     return res.status(404).json("userId not found");
   }
