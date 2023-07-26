@@ -6,13 +6,16 @@
   "scripts": {
     "start": "node index.js",
     "start:dev": "nodemon index.js",
+    "start:userdev": "nodemon userService/index.js",
     "start:authdev": "nodemon authService/index.js",
+    "start:profiledev": "nodemon profileService/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
